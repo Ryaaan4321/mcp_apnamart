@@ -1,0 +1,8 @@
+import { StdioServerTransport } from '@modelcontextprotocol/sdk/server/stdio.js';
+import { createMcpServer } from './mcp/index.js';
+
+const mcpServer = createMcpServer();
+const transport = new StdioServerTransport();
+
+await mcpServer.connect(transport);
+console.error('[ApnaMart] MCP Stdio Server running and listening for JSON-RPC messages.');

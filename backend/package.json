@@ -1,0 +1,22 @@
+{
+  "name": "apnamart-backend-mcp",
+  "version": "1.0.0",
+  "type": "module",
+  "main": "src/index.js",
+  "scripts": {
+    "start": "node src/index.js",
+    "start:api": "node src/server.js",
+    "start:mcp": "node src/mcpStdio.js",
+    "test": "node --test"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.6.1",
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.7",
+    "express": "^4.21.2",
+    "zod": "^3.24.2"
+  },
+  "author": "Apna Mart Team",
+  "license": "ISC",
+  "description": "Apna Mart Demo MCP and REST API Backend with Clean Layered Architecture"
+}
