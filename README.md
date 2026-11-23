@@ -1,12 +1,12 @@
 # Apna Mart - Demo MCP & Dual REST API Backend
 
-A production-grade, cleanly architected Model Context Protocol (MCP) server and Express REST API for **Apna Mart** ([https://apnamart.in/](https://apnamart.in/)), the omnichannel retail grocery network powering everyday wholesale essentials across Tier-2 and Tier-3 cities in India.
+A cleanly architected Model Context Protocol (MCP) server and Express REST API for Apna Mart (https://apnamart.in/), the omnichannel retail grocery network powering everyday wholesale essentials across Tier-2 and Tier-3 cities in India.
 
 ---
 
-## 🏗️ Clean Layered Architecture & Separation of Concerns
+## Architecture and Separation of Concerns
 
-The codebase strictly decouples responsibilities into distinct layers where business logic, error handling, and logging are centralized and shared across both **MCP Tools** and **Express REST Routes**:
+The codebase strictly decouples responsibilities into distinct layers where business logic, error handling, and logging are centralized and shared across both MCP Tools and Express REST Routes:
 
 ```
 backend/
@@ -72,9 +72,9 @@ backend/
 
 ---
 
-## 🛠️ MCP Tools & Capabilities
+## MCP Tools and Capabilities
 
-Every MCP tool validates inputs with **Zod** and delegates directly to the **Service** layer, guaranteeing identical business rules and validation across both AI tool calls and HTTP endpoints.
+Every MCP tool validates inputs with Zod and delegates directly to the Service layer, guaranteeing identical business rules and validation across both AI tool calls and HTTP endpoints.
 
 | MCP Tool | Description | Parameters |
 | :--- | :--- | :--- |
@@ -93,7 +93,7 @@ Every MCP tool validates inputs with **Zod** and delegates directly to the **Ser
 
 ---
 
-## 🚀 Running the Project
+## Running the Project
 
 ### 1. Run Tests
 Verify all architectural layers (errors, logger, repositories, services, controllers, HTTP routes, and MCP tools):
@@ -107,10 +107,10 @@ npm run start:api
 # Or
 npm start
 ```
-- **REST Health Check:** `http://localhost:4000/health`
-- **Product Search API:** `http://localhost:4000/api/v1/products/search?q=atta`
-- **Store Serviceability API:** `http://localhost:4000/api/v1/stores/serviceability/834001`
-- **MCP SSE Endpoint:** `http://localhost:4000/sse`
+- REST Health Check: `http://localhost:4000/health`
+- Product Search API: `http://localhost:4000/api/v1/products/search?q=atta`
+- Store Serviceability API: `http://localhost:4000/api/v1/stores/serviceability/834001`
+- MCP SSE Endpoint: `http://localhost:4000/sse`
 
 ### 3. Run MCP in Stdio Mode (for AI Assistants & IDEs)
 ```bash
@@ -119,7 +119,7 @@ npm run start:mcp
 
 ---
 
-## 🔌 Connecting to Claude Desktop / Cursor / Antigravity
+## Connecting to Claude Desktop / Cursor / Antigravity
 
 Add the following to your MCP client configuration (e.g. `claude_desktop_config.json`):
 
