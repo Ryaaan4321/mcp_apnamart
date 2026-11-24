@@ -1,6 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { createApp } from '../src/app.js';
+import { prisma } from '../src/db/prisma.js';
 
 test('7. Express HTTP REST API Endpoints', async () => {
   const app = createApp();
@@ -54,5 +55,6 @@ test('7. Express HTTP REST API Endpoints', async () => {
     assert.equal(notFoundData.error.statusCode, 404);
   } finally {
     await new Promise((resolve) => server.close(resolve));
+    await prisma.$disconnect();
   }
 });

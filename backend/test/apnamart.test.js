@@ -1,11 +1,16 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 
+import { prisma } from '../src/db/prisma.js';
 import { NotFoundError, BadRequestError } from '../src/errors/index.js';
 import { Logger } from '../src/logger/Logger.js';
 import { ProductRepository, StoreRepository, CartRepository, OrderRepository } from '../src/repositories/index.js';
 import { ProductService, StoreService, CartService, OrderService } from '../src/services/index.js';
 import { createMcpServer } from '../src/mcp/index.js';
+
+test.after(async () => {
+  await prisma.$disconnect();
+});
 
 test('1. Error Hierarchy test', () => {
   const notFound = new NotFoundError('Product', 'prod_xyz');

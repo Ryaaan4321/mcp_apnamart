@@ -11,15 +11,19 @@ The codebase strictly decouples responsibilities into distinct layers where busi
 ```
 backend/
 ├── package.json
-├── .env.example
-├── README.md
+├── .env                  # Neon PostgreSQL DATABASE_URL and server config
+├── prisma/
+│   ├── schema.prisma     # Prisma models for Product, Store, Cart, and Order
+│   └── seed.js           # Seed script populating initial catalog and stores
 ├── test/
-│   ├── apnamart.test.js      # Unit tests for Errors, Logger, Repositories, Services, MCP
-│   └── http.test.js          # Integration tests for Express REST endpoints
+│   ├── apnamart.test.js  # Unit tests for Errors, Logger, Repositories, Services, MCP
+│   └── http.test.js      # Integration tests for Express REST endpoints
 └── src/
     ├── config/
-    │   └── env.js            # Environment configuration & defaults
-    ├── errors/               # Centralized operational Error class hierarchy
+    │   └── env.js        # Environment configuration and defaults
+    ├── db/
+    │   └── prisma.js     # PrismaClient singleton instance
+    ├── errors/           # Centralized operational Error class hierarchy
     │   ├── AppError.js        # Base operational error with HTTP status codes & metadata
     │   ├── BadRequestError.js # 400 Bad Request
     │   ├── NotFoundError.js   # 404 Resource Not Found
@@ -27,36 +31,35 @@ backend/
     │   ├── ConflictError.js   # 409 Conflict
     │   └── index.js
     ├── logger/
-    │   └── Logger.js         # Structured Logger class with level filtering and context tags
-    ├── repositories/         # Pure Data Access Layer (CRUD, indexing, in-memory DB)
-    │   ├── BaseRepository.js    # Generic in-memory repository base class
-    │   ├── ProductRepository.js # Product catalog & stock decrementing
-    │   ├── StoreRepository.js   # Store hubs & pincode index
-    │   ├── CartRepository.js    # Session-based cart storage & total computations
-    │   ├── OrderRepository.js   # Placed orders & phone lookup
+    │   └── Logger.js     # Structured Logger class with level filtering and context tags
+    ├── repositories/     # Database Access Layer powered by Prisma ORM
+    │   ├── ProductRepository.js # Product catalog and stock reservation via prisma.product
+    │   ├── StoreRepository.js   # Store hubs and pincode index via prisma.store
+    │   ├── CartRepository.js    # Persistent cart storage and totals via prisma.cart
+    │   ├── OrderRepository.js   # Placed orders and phone lookup via prisma.order
     │   └── index.js             # Singleton instances & exports
-    ├── services/             # Pure Business Logic Layer (classes with DI, logger & errors)
+    ├── services/         # Pure Business Logic Layer (classes with DI, logger & errors)
     │   ├── ProductService.js    # Catalog search, category listing, stock reservation
     │   ├── StoreService.js      # Pincode serviceability & store lookup
     │   ├── CartService.js       # Cart calculation, discounts, quantity checks
     │   ├── OrderService.js      # Order placement, pincode validation, stock deduction
     │   └── index.js             # Singleton instances with DI
-    ├── controllers/          # HTTP Request/Response Handlers (Express)
+    ├── controllers/      # HTTP Request/Response Handlers (Express)
     │   ├── ProductController.js
     │   ├── StoreController.js
     │   ├── CartController.js
     │   ├── OrderController.js
     │   └── index.js
-    ├── routes/               # Express Router definitions
+    ├── routes/           # Express Router definitions
     │   ├── productRoutes.js
     │   ├── storeRoutes.js
     │   ├── cartRoutes.js
     │   ├── orderRoutes.js
     │   └── index.js
-    ├── middlewares/          # Express Middlewares
+    ├── middlewares/      # Express Middlewares
     │   ├── errorHandler.js      # Centralized error handler capturing AppError
     │   └── requestLogger.js     # HTTP request audit log
-    ├── mcp/                  # Model Context Protocol (MCP) Layer
+    ├── mcp/              # Model Context Protocol (MCP) Layer
     │   ├── tools/
     │   │   ├── productTools.js  # search_products, get_product_details, list_categories
     │   │   ├── storeTools.js    # check_delivery_serviceability, list_stores
@@ -64,10 +67,31 @@ backend/
     │   │   └── orderTools.js    # place_order, track_order
     │   ├── mcpServer.js         # McpServer initialization, tools & resources registration
     │   └── index.js
-    ├── app.js                # Express app factory with middleware pipeline
-    ├── server.js             # Dual HTTP server (REST API + SSE MCP endpoint)
-    ├── mcpStdio.js           # MCP Stdio transport runner (for AI desktop agents)
-    └── index.js              # Default entry point
+    ├── app.js            # Express app factory with middleware pipeline
+    ├── server.js         # Dual HTTP server (REST API + SSE MCP endpoint)
+    ├── mcpStdio.js       # MCP Stdio transport runner (for AI desktop agents)
+    └── index.js          # Default entry point
+```
+
+---
+
+## Database (Neon PostgreSQL with Prisma ORM)
+
+The database schema is defined in `prisma/schema.prisma` and connected to Neon Serverless PostgreSQL.
+
+### Models
+- `Product`: Catalogs, pricing, units, stock quantities, and availability.
+- `Store`: Physical store locations, operating hours, and serviceable Indian pincodes.
+- `Cart`: Persistent shopping carts by user/session identifier.
+- `Order`: Confirmed orders, delivery addresses, line items, and fulfillment statuses.
+
+### Database Commands
+```bash
+# Push schema updates to Neon PostgreSQL
+npm run db:push
+
+# Seed the initial catalog, stores, and sample orders
+npm run db:seed
 ```
 
 ---
