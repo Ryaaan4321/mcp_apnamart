@@ -21,27 +21,35 @@ export class Logger {
     return `[${timestamp}] [${level}] [${this.context}] ${message}${metaStr}`;
   }
 
+  _write(streamMethod, formatted) {
+    if (process.env.MCP_STDIO === 'true') {
+      console.error(formatted);
+    } else {
+      console[streamMethod](formatted);
+    }
+  }
+
   debug(message, meta) {
     if (this.minLevel <= Logger.LogLevel.DEBUG) {
-      console.debug(this._format('DEBUG', message, meta));
+      this._write('debug', this._format('DEBUG', message, meta));
     }
   }
 
   info(message, meta) {
     if (this.minLevel <= Logger.LogLevel.INFO) {
-      console.log(this._format('INFO', message, meta));
+      this._write('log', this._format('INFO', message, meta));
     }
   }
 
   warn(message, meta) {
     if (this.minLevel <= Logger.LogLevel.WARN) {
-      console.warn(this._format('WARN', message, meta));
+      this._write('warn', this._format('WARN', message, meta));
     }
   }
 
   error(message, errorOrMeta) {
     if (this.minLevel <= Logger.LogLevel.ERROR) {
-      console.error(this._format('ERROR', message, errorOrMeta));
+      this._write('error', this._format('ERROR', message, errorOrMeta));
     }
   }
 }

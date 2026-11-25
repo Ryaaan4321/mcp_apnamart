@@ -36,7 +36,6 @@ export default function App() {
       const res = await api.getCart();
       setCart(res.data);
     } catch {
-      // Ignore initial cart load failure if backend is offline
     }
   }, []);
 

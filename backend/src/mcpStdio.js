@@ -1,5 +1,8 @@
-import { StdioServerTransport } from '@modelcontextprotocol/sdk/server/stdio.js';
-import { createMcpServer } from './mcp/index.js';
+process.env.MCP_STDIO = 'true';
+
+await import('./config/env.js');
+const { StdioServerTransport } = await import('@modelcontextprotocol/sdk/server/stdio.js');
+const { createMcpServer } = await import('./mcp/index.js');
 
 const mcpServer = createMcpServer();
 const transport = new StdioServerTransport();
