@@ -5,6 +5,7 @@ import { registerProductTools } from './tools/productTools.js';
 import { registerStoreTools } from './tools/storeTools.js';
 import { registerCartTools } from './tools/cartTools.js';
 import { registerOrderTools } from './tools/orderTools.js';
+import { registerGroceryPrompts } from './prompts/groceryPrompts.js';
 
 export function createMcpServer() {
   const logger = defaultLogger.forContext('McpServer');
@@ -18,6 +19,7 @@ export function createMcpServer() {
   registerStoreTools(server, storeService);
   registerCartTools(server, cartService);
   registerOrderTools(server, orderService);
+  registerGroceryPrompts(server);
 
   server.resource(
     'categories',
@@ -53,6 +55,6 @@ export function createMcpServer() {
     }
   );
 
-  logger.info('Apna Mart MCP Server initialized with tools and resources.');
+  logger.info('Apna Mart MCP Server initialized with tools, prompts, and resources.');
   return server;
 }

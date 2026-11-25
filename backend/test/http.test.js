@@ -32,8 +32,10 @@ test('7. Express HTTP REST API Endpoints', async () => {
     assert.ok(storeData.success);
     assert.equal(storeData.data.isServiceable, true);
 
+    const testCartId = `cart_http_test_${Date.now()}`;
+
     const cartRes = await fetch(`${baseUrl}/api/v1/cart`, {
-      headers: { 'x-cart-id': 'cart_http_test' }
+      headers: { 'x-cart-id': testCartId }
     });
     assert.equal(cartRes.status, 200);
     const cartData = await cartRes.json();
@@ -41,7 +43,7 @@ test('7. Express HTTP REST API Endpoints', async () => {
 
     const addRes = await fetch(`${baseUrl}/api/v1/cart/items`, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json', 'x-cart-id': 'cart_http_test' },
+      headers: { 'Content-Type': 'application/json', 'x-cart-id': testCartId },
       body: JSON.stringify({ productId: 'prod_rice_002', quantity: 2 })
     });
     assert.equal(addRes.status, 200);

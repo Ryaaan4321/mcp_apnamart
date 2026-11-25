@@ -110,4 +110,7 @@ test('6. MCP Server Initialization', () => {
   assert.ok(mcpServer._registeredTools.place_order);
   assert.ok(mcpServer._registeredTools.check_delivery_serviceability);
   assert.ok(mcpServer._registeredTools.manage_cart);
+  assert.ok(mcpServer._registeredPrompts.plan_weekly_groceries);
+  assert.ok(mcpServer._registeredPrompts.check_pincode_and_order);
+  assert.ok(mcpServer._registeredPrompts.reorder_essentials);
 });

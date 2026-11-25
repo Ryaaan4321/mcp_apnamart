@@ -60,6 +60,8 @@ backend/
     │   ├── errorHandler.js      # Centralized error handler capturing AppError
     │   └── requestLogger.js     # HTTP request audit log
     ├── mcp/              # Model Context Protocol (MCP) Layer
+    │   ├── prompts/
+    │   │   └── groceryPrompts.js # plan_weekly_groceries, check_pincode_and_order, reorder_essentials
     │   ├── tools/
     │   │   ├── productTools.js  # search_products, get_product_details, list_categories
     │   │   ├── storeTools.js    # check_delivery_serviceability, list_stores
@@ -114,6 +116,11 @@ Every MCP tool validates inputs with Zod and delegates directly to the Service l
 ### MCP Resources
 - `apnamart://products/categories`: JSON list of all product categories.
 - `apnamart://stores`: JSON list of all active physical supermarts and their serviceable postal codes.
+
+### MCP Prompts
+- `plan_weekly_groceries`: Guided weekly basket recommendation tailored to budget, household size, and preferences.
+- `check_pincode_and_order`: Guided flow to verify pincode delivery coverage before taking a shopping list and placing an order.
+- `reorder_essentials`: Looks up a previous order, verifies item availability, and assists with adding items back to the cart.
 
 ---
 
