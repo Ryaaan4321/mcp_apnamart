@@ -50,8 +50,22 @@ test('4. Product and Store Services business logic', async () => {
   const storeService = new StoreService(storeRepo);
 
   const searchResults = await productService.searchProducts({ query: 'Mustard' });
-  assert.equal(searchResults.length, 1);
-  assert.equal(searchResults[0].id, 'prod_oil_004');
+  assert.equal(searchResults.items.length, 1);
+  assert.equal(searchResults.items[0].id, 'prod_oil_004');
+  assert.equal(searchResults.pagination.total, 1);
+  assert.equal(searchResults.facets.brands[0].name, 'Fortune');
+
+  const paginated = await productService.searchProducts({ sortBy: 'price_asc', page: 1, limit: 3 });
+  assert.equal(paginated.items.length, 3);
+  assert.equal(paginated.pagination.limit, 3);
+  assert.ok(paginated.pagination.hasNextPage);
+  assert.ok(paginated.items[0].apnaMartPrice <= paginated.items[1].apnaMartPrice);
+  assert.ok(paginated.facets.categories.length > 0);
+  assert.ok(paginated.facets.priceRange.max >= paginated.facets.priceRange.min);
+
+  const brandFiltered = await productService.searchProducts({ brand: 'Amul' });
+  assert.ok(brandFiltered.items.length >= 2);
+  assert.ok(brandFiltered.items.every(p => p.brand === 'Amul'));
 
   const categories = await productService.listCategories();
   assert.ok(categories.includes('Staples & Grains'));

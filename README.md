@@ -104,7 +104,7 @@ Every MCP tool validates inputs with Zod and delegates directly to the Service l
 
 | MCP Tool | Description | Parameters |
 | :--- | :--- | :--- |
-| `search_products` | Search Apna Mart grocery and household items by keyword, category, price range, stock status | `query`, `category`, `minPrice`, `maxPrice`, `inStockOnly` |
+| `search_products` | Search Apna Mart grocery and household items with filtering, sorting, pagination, and facets | `query`, `category`, `brand`, `minPrice`, `maxPrice`, `inStockOnly`, `sortBy`, `page`, `limit` |
 | `get_product_details` | Retrieve pricing (MRP vs Apna Mart price), unit weight, savings, and stock | `productId` |
 | `list_categories` | List all grocery, staples, FMCG categories | *(none)* |
 | `check_delivery_serviceability` | Check if a 6-digit Indian PIN code has quick delivery coverage and find nearest supermart | `pincode` (e.g. `834001`) |

@@ -3,24 +3,40 @@ import { z } from 'zod';
 export function registerProductTools(server, productService) {
   server.tool(
     'search_products',
-    'Search Apna Mart grocery and household product catalog by keyword, category, price range, or stock status',
+    'Search Apna Mart grocery and household product catalog with filtering, sorting, pagination, and facet aggregations',
     {
       query: z.string().optional().describe('Search query keyword (e.g. "atta", "fortune oil", "amul milk", "maggi")'),
       category: z.string().optional().describe('Filter by product category (e.g. "Staples & Grains", "Dairy & Bakery", "Oils & Spices")'),
+      brand: z.string().optional().describe('Filter by brand name (e.g. "Amul", "Aashirvaad", "Fortune")'),
       minPrice: z.number().optional().describe('Minimum Apna Mart price in INR'),
       maxPrice: z.number().optional().describe('Maximum Apna Mart price in INR'),
-      inStockOnly: z.boolean().optional().default(false).describe('Show only items currently in stock')
+      inStockOnly: z.boolean().optional().default(false).describe('Show only items currently in stock'),
+      sortBy: z.enum(['price_asc', 'price_desc', 'discount_desc', 'name_asc', 'name_desc']).optional().default('name_asc').describe('Sort order for matching products'),
+      page: z.number().int().min(1).optional().default(1).describe('Page number (1-indexed)'),
+      limit: z.number().int().min(1).max(100).optional().default(20).describe('Number of products per page')
     },
-    async ({ query, category, minPrice, maxPrice, inStockOnly }) => {
+    async ({ query, category, brand, minPrice, maxPrice, inStockOnly, sortBy, page, limit }) => {
       try {
-        const results = await productService.searchProducts({ query, category, minPrice, maxPrice, inStockOnly });
+        const result = await productService.searchProducts({
+          query,
+          category,
+          brand,
+          minPrice,
+          maxPrice,
+          inStockOnly,
+          sortBy,
+          page,
+          limit
+        });
         return {
           content: [
             {
               type: 'text',
               text: JSON.stringify({
-                count: results.length,
-                products: results
+                count: result.items.length,
+                pagination: result.pagination,
+                facets: result.facets,
+                products: result.items
               }, null, 2)
             }
           ]

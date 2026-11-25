@@ -1,17 +1,48 @@
 import { Logger } from '../logger/Logger.js';
 import { NotFoundError, BadRequestError } from '../errors/index.js';
 
+const VALID_SORT_OPTIONS = new Set([
+  'price_asc',
+  'price_desc',
+  'discount_desc',
+  'name_asc',
+  'name_desc'
+]);
+
 export class ProductService {
   constructor(productRepository, logger = null) {
     this.productRepository = productRepository;
     this.logger = logger ? logger.forContext('ProductService') : new Logger('ProductService');
   }
+
   async searchProducts(filters = {}) {
-    this.logger.info(`Searching products with filters:`, filters);
-    const results = await this.productRepository.search(filters);
-    this.logger.debug(`Found ${results.length} products matching criteria`);
-    return results;
+    const page = filters.page !== undefined ? Number(filters.page) : 1;
+    const limit = filters.limit !== undefined ? Number(filters.limit) : 20;
+    const sortBy = filters.sortBy || 'name_asc';
+
+    if (!Number.isInteger(page) || page < 1) {
+      throw new BadRequestError('Page must be a positive integer');
+    }
+    if (!Number.isInteger(limit) || limit < 1 || limit > 100) {
+      throw new BadRequestError('Limit must be an integer between 1 and 100');
+    }
+    if (!VALID_SORT_OPTIONS.has(sortBy)) {
+      throw new BadRequestError(`Invalid sortBy option. Allowed values: ${Array.from(VALID_SORT_OPTIONS).join(', ')}`);
+    }
+
+    const normalizedFilters = {
+      ...filters,
+      page,
+      limit,
+      sortBy
+    };
+
+    this.logger.info('Searching products with filters:', normalizedFilters);
+    const result = await this.productRepository.search(normalizedFilters);
+    this.logger.debug(`Found ${result.pagination.total} products (page ${page}/${result.pagination.totalPages})`);
+    return result;
   }
+
   async getProductById(productId) {
     if (!productId) {
       throw new BadRequestError('Product ID is required');
@@ -24,10 +55,12 @@ export class ProductService {
     }
     return product;
   }
+
   async listCategories() {
     this.logger.info('Fetching product categories');
     return this.productRepository.getAllCategories();
   }
+
   async validateAndReserveStock(productId, quantity) {
     if (quantity <= 0) {
       throw new BadRequestError('Quantity must be greater than zero');

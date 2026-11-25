@@ -19,12 +19,16 @@ test('7. Express HTTP REST API Endpoints', async () => {
     const healthData = await healthRes.json();
     assert.equal(healthData.status, 'UP');
 
-    const prodRes = await fetch(`${baseUrl}/api/v1/products/search?q=atta`);
+    const prodRes = await fetch(`${baseUrl}/api/v1/products/search?q=atta&sortBy=price_asc&page=1&limit=5`);
     assert.equal(prodRes.status, 200);
     const prodData = await prodRes.json();
     assert.ok(prodData.success);
     assert.ok(prodData.data.length > 0);
     assert.equal(prodData.data[0].id, 'prod_atta_001');
+    assert.equal(prodData.pagination.page, 1);
+    assert.equal(prodData.pagination.limit, 5);
+    assert.ok(Array.isArray(prodData.facets.categories));
+    assert.ok(Array.isArray(prodData.facets.brands));
 
     const storeRes = await fetch(`${baseUrl}/api/v1/stores/serviceability/834001`);
     assert.equal(storeRes.status, 200);
