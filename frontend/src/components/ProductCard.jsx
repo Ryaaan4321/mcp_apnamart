@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { Plus, Minus, Wheat, Droplet, Milk, Cookie, Sparkles, ShieldCheck, Package } from 'lucide-react';
 
 const CATEGORY_VISUALS = {
@@ -10,6 +11,7 @@ const CATEGORY_VISUALS = {
 };
 
 export function ProductCard({ product, cartQuantity, onAdd, onDecrement, busy }) {
+  const [imgFailed, setImgFailed] = useState(false);
   const visual = CATEGORY_VISUALS[product.category] || {
     icon: Package,
     bg: 'bg-neutral-100',
@@ -17,12 +19,23 @@ export function ProductCard({ product, cartQuantity, onAdd, onDecrement, busy })
   };
   const Icon = visual.icon;
   const outOfStock = !product.isAvailable || product.stock <= 0;
+  const imgSrc = !imgFailed ? (product.thumbnailUrl || product.imageUrl) : null;
 
   return (
     <div className="bg-white rounded-xl border border-neutral-200/80 hover:border-neutral-300 transition-all p-3 flex flex-col justify-between gap-2.5">
       <div>
-        <div className={`w-full h-24 rounded-lg ${visual.bg} ${visual.text} flex items-center justify-center relative mb-2.5`}>
-          <Icon className="w-7 h-7" />
+        <div className={`w-full h-24 rounded-lg ${visual.bg} ${visual.text} flex items-center justify-center relative mb-2.5 overflow-hidden`}>
+          {imgSrc ? (
+            <img
+              src={imgSrc}
+              alt={product.name}
+              loading="lazy"
+              onError={() => setImgFailed(true)}
+              className="w-full h-full object-cover"
+            />
+          ) : (
+            <Icon className="w-7 h-7" />
+          )}
           {product.discountPercentage > 0 && (
             <span className="absolute top-2 left-2 px-1.5 py-0.5 rounded bg-emerald-600 text-white text-[10px] font-bold">
               {product.discountPercentage}% OFF

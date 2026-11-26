@@ -4,6 +4,7 @@
   "type": "module",
   "main": "src/index.js",
   "scripts": {
+    "build": "prisma generate",
     "start": "node src/index.js",
     "start:api": "node src/server.js",
     "start:mcp": "node src/mcpStdio.js",
@@ -12,10 +13,12 @@
     "test": "node --test"
   },
   "dependencies": {
+    "@modelcontextprotocol/ext-apps": "^2.0.4",
     "@modelcontextprotocol/sdk": "^1.6.1",
     "@prisma/client": "^6.19.3",
     "cors": "^2.8.5",
     "dotenv": "^16.4.7",
+    "esbuild": "^0.28.2",
     "express": "^4.21.2",
     "zod": "^3.24.2"
   },

@@ -10,7 +10,15 @@ export class CartService {
 
   async getCart(cartId = 'default_user_cart') {
     this.logger.debug(`Retrieving cart: ${cartId}`);
-    return this.cartRepository.getOrCreateCart(cartId);
+    const cart = await this.cartRepository.getOrCreateCart(cartId);
+    return {
+      ...cart,
+      items: (cart.items || []).map(item => ({
+        ...item,
+        imageUrl: item.imageUrl ?? null,
+        thumbnailUrl: item.thumbnailUrl ?? null
+      }))
+    };
   }
 
   async addItem(cartId = 'default_user_cart', productId, quantity = 1) {
@@ -38,6 +46,8 @@ export class CartService {
       }
       cart.items[existingItemIndex].quantity = newQty;
       cart.items[existingItemIndex].totalPrice = newQty * product.apnaMartPrice;
+      cart.items[existingItemIndex].imageUrl = product.imageUrl ?? null;
+      cart.items[existingItemIndex].thumbnailUrl = product.thumbnailUrl ?? null;
     } else {
       cart.items.push({
         productId: product.id,
@@ -46,7 +56,9 @@ export class CartService {
         mrp: product.mrp,
         unit: product.unit,
         quantity: quantity,
-        totalPrice: product.apnaMartPrice * quantity
+        totalPrice: product.apnaMartPrice * quantity,
+        imageUrl: product.imageUrl ?? null,
+        thumbnailUrl: product.thumbnailUrl ?? null
       });
     }
 

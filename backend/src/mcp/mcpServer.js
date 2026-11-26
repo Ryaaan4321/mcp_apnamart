@@ -6,6 +6,7 @@ import { registerStoreTools } from './tools/storeTools.js';
 import { registerCartTools } from './tools/cartTools.js';
 import { registerOrderTools } from './tools/orderTools.js';
 import { registerGroceryPrompts } from './prompts/groceryPrompts.js';
+import { UI_RESOURCES, UI_CSP_META, getUiHtml } from './ui/buildUiResources.js';
 
 export function createMcpServer() {
   const logger = defaultLogger.forContext('McpServer');
@@ -20,6 +21,28 @@ export function createMcpServer() {
   registerCartTools(server, cartService);
   registerOrderTools(server, orderService);
   registerGroceryPrompts(server);
+
+  for (const [key, def] of Object.entries(UI_RESOURCES)) {
+    server.registerResource(
+      def.name,
+      def.uri,
+      {
+        title: def.title,
+        mimeType: 'text/html;profile=mcp-app',
+        _meta: UI_CSP_META
+      },
+      async (uri) => ({
+        contents: [
+          {
+            uri: uri.href,
+            mimeType: 'text/html;profile=mcp-app',
+            text: getUiHtml(key),
+            _meta: UI_CSP_META
+          }
+        ]
+      })
+    );
+  }
 
   server.resource(
     'categories',

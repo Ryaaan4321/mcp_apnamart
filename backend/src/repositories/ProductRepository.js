@@ -8,15 +8,24 @@ const SORT_OPTIONS = {
   name_desc: { name: 'desc' }
 };
 
+function withImageFields(product) {
+  if (!product) return null;
+  return {
+    ...product,
+    imageUrl: product.imageUrl ?? null,
+    thumbnailUrl: product.thumbnailUrl ?? null
+  };
+}
+
 export class ProductRepository {
   constructor(prismaClient = prisma) {
     this.prisma = prismaClient;
   }
 
   async findAll(filterFn = null) {
-    const products = await this.prisma.product.findMany({
+    const products = (await this.prisma.product.findMany({
       orderBy: { name: 'asc' }
-    });
+    })).map(withImageFields);
     if (typeof filterFn === 'function') {
       return products.filter(filterFn);
     }
@@ -25,9 +34,10 @@ export class ProductRepository {
 
   async findById(id) {
     if (!id) return null;
-    return this.prisma.product.findUnique({
+    const product = await this.prisma.product.findUnique({
       where: { id }
     });
+    return withImageFields(product);
   }
 
   async search({
@@ -105,7 +115,7 @@ export class ProductRepository {
     const totalPages = Math.max(1, Math.ceil(total / limit));
 
     return {
-      items,
+      items: items.map(withImageFields),
       pagination: {
         page,
         limit,

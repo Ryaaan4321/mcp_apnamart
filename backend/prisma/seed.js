@@ -14,7 +14,9 @@ const PRODUCTS = [
     unit: '5 kg',
     stock: 85,
     isAvailable: true,
-    description: '100% whole wheat flour, soft rotis with traditional chakki process.'
+    description: '100% whole wheat flour, soft rotis with traditional chakki process.',
+    imageUrl: 'https://images.unsplash.com/photo-1574323347407-f5e1ad6d020b?auto=format&fit=crop&w=800&q=80',
+    thumbnailUrl: 'https://images.unsplash.com/photo-1574323347407-f5e1ad6d020b?auto=format&fit=crop&w=200&q=70'
   },
   {
     id: 'prod_rice_002',
@@ -27,7 +29,9 @@ const PRODUCTS = [
     unit: '1 kg',
     stock: 120,
     isAvailable: true,
-    description: 'Aromatic long grain basmati rice ideal for everyday cooking and pulao.'
+    description: 'Aromatic long grain basmati rice ideal for everyday cooking and pulao.',
+    imageUrl: 'https://images.unsplash.com/photo-1586201375761-83865001e31c?auto=format&fit=crop&w=800&q=80',
+    thumbnailUrl: 'https://images.unsplash.com/photo-1586201375761-83865001e31c?auto=format&fit=crop&w=200&q=70'
   },
   {
     id: 'prod_dal_003',
@@ -40,7 +44,9 @@ const PRODUCTS = [
     unit: '1 kg',
     stock: 90,
     isAvailable: true,
-    description: 'Unpolished premium toor dal, rich in protein without artificial colors.'
+    description: 'Unpolished premium toor dal, rich in protein without artificial colors.',
+    imageUrl: 'https://images.unsplash.com/photo-1515543904379-3d757afe72e4?auto=format&fit=crop&w=800&q=80',
+    thumbnailUrl: 'https://images.unsplash.com/photo-1515543904379-3d757afe72e4?auto=format&fit=crop&w=200&q=70'
   },
   {
     id: 'prod_oil_004',
@@ -53,7 +59,9 @@ const PRODUCTS = [
     unit: '1 L',
     stock: 64,
     isAvailable: true,
-    description: 'Cold pressed authentic pungent kachi ghani mustard oil for authentic taste.'
+    description: 'Cold pressed authentic pungent kachi ghani mustard oil for authentic taste.',
+    imageUrl: 'https://images.unsplash.com/photo-1474979266404-7eaacbcd87c5?auto=format&fit=crop&w=800&q=80',
+    thumbnailUrl: 'https://images.unsplash.com/photo-1474979266404-7eaacbcd87c5?auto=format&fit=crop&w=200&q=70'
   },
   {
     id: 'prod_masala_005',
@@ -66,7 +74,9 @@ const PRODUCTS = [
     unit: '100 g',
     stock: 150,
     isAvailable: true,
-    description: 'Low-temperature ground spice blend preserving natural essential oils.'
+    description: 'Low-temperature ground spice blend preserving natural essential oils.',
+    imageUrl: null,
+    thumbnailUrl: null
   },
   {
     id: 'prod_dairy_006',
@@ -79,7 +89,9 @@ const PRODUCTS = [
     unit: '1 L',
     stock: 45,
     isAvailable: true,
-    description: 'UHT treated long life toned milk, nutritious and ready to drink.'
+    description: 'UHT treated long life toned milk, nutritious and ready to drink.',
+    imageUrl: 'https://images.unsplash.com/photo-1550583724-b2692b85b150?auto=format&fit=crop&w=800&q=80',
+    thumbnailUrl: 'https://images.unsplash.com/photo-1550583724-b2692b85b150?auto=format&fit=crop&w=200&q=70'
   },
   {
     id: 'prod_dairy_007',
@@ -92,7 +104,9 @@ const PRODUCTS = [
     unit: '200 g',
     stock: 35,
     isAvailable: true,
-    description: 'Rich, soft and fresh Indian cottage cheese.'
+    description: 'Rich, soft and fresh Indian cottage cheese.',
+    imageUrl: 'https://images.unsplash.com/photo-1631452180519-c014fe946bc7?auto=format&fit=crop&w=800&q=80',
+    thumbnailUrl: 'https://images.unsplash.com/photo-1631452180519-c014fe946bc7?auto=format&fit=crop&w=200&q=70'
   },
   {
     id: 'prod_snack_008',
@@ -105,7 +119,9 @@ const PRODUCTS = [
     unit: '280 g',
     stock: 200,
     isAvailable: true,
-    description: 'Classic favorite instant noodles with authentic Indian masala tastemaker.'
+    description: 'Classic favorite instant noodles with authentic Indian masala tastemaker.',
+    imageUrl: 'https://images.unsplash.com/photo-1612929633738-8fe44f7ec841?auto=format&fit=crop&w=800&q=80',
+    thumbnailUrl: 'https://images.unsplash.com/photo-1612929633738-8fe44f7ec841?auto=format&fit=crop&w=200&q=70'
   },
   {
     id: 'prod_snack_009',
@@ -118,7 +134,9 @@ const PRODUCTS = [
     unit: '400 g',
     stock: 80,
     isAvailable: true,
-    description: 'Crispy spicy potato gram flour noodles snack.'
+    description: 'Crispy spicy potato gram flour noodles snack.',
+    imageUrl: 'https://images.unsplash.com/photo-1599490659213-e2b9527bd087?auto=format&fit=crop&w=800&q=80',
+    thumbnailUrl: 'https://images.unsplash.com/photo-1599490659213-e2b9527bd087?auto=format&fit=crop&w=200&q=70'
   },
   {
     id: 'prod_clean_010',
@@ -131,7 +149,9 @@ const PRODUCTS = [
     unit: '1 kg',
     stock: 70,
     isAvailable: true,
-    description: 'X-tra clean technology that removes tough stains quickly in machines or bucket.'
+    description: 'X-tra clean technology that removes tough stains quickly in machines or bucket.',
+    imageUrl: 'https://images.unsplash.com/photo-1584813470613-5b1c1cad3d69?auto=format&fit=crop&w=800&q=80',
+    thumbnailUrl: 'https://images.unsplash.com/photo-1584813470613-5b1c1cad3d69?auto=format&fit=crop&w=200&q=70'
   },
   {
     id: 'prod_clean_011',
@@ -144,7 +164,9 @@ const PRODUCTS = [
     unit: '500 ml',
     stock: 110,
     isAvailable: true,
-    description: 'Powerful degreasing dishwash gel infused with 100 lemons power.'
+    description: 'Powerful degreasing dishwash gel infused with 100 lemons power.',
+    imageUrl: 'https://images.unsplash.com/photo-1585421514284-efb74c2b69ba?auto=format&fit=crop&w=800&q=80',
+    thumbnailUrl: 'https://images.unsplash.com/photo-1585421514284-efb74c2b69ba?auto=format&fit=crop&w=200&q=70'
   },
   {
     id: 'prod_care_012',
@@ -157,7 +179,9 @@ const PRODUCTS = [
     unit: '500 g',
     stock: 55,
     isAvailable: true,
-    description: 'Antibacterial soap protecting against 100 illness-causing germs.'
+    description: 'Antibacterial soap protecting against 100 illness-causing germs.',
+    imageUrl: 'https://images.unsplash.com/photo-1584305574647-0cc949a2bb9f?auto=format&fit=crop&w=800&q=80',
+    thumbnailUrl: 'https://images.unsplash.com/photo-1584305574647-0cc949a2bb9f?auto=format&fit=crop&w=200&q=70'
   }
 ];
 
@@ -257,14 +281,18 @@ const SAMPLE_ORDERS = [
         name: 'Aashirvaad Shudh Chakki Atta (5kg)',
         price: 239,
         quantity: 1,
-        total: 239
+        total: 239,
+        imageUrl: 'https://images.unsplash.com/photo-1574323347407-f5e1ad6d020b?auto=format&fit=crop&w=800&q=80',
+        thumbnailUrl: 'https://images.unsplash.com/photo-1574323347407-f5e1ad6d020b?auto=format&fit=crop&w=200&q=70'
       },
       {
         productId: 'prod_oil_004',
         name: 'Fortune Kachi Ghani Pure Mustard Oil (1L Pouch)',
         price: 138,
         quantity: 2,
-        total: 276
+        total: 276,
+        imageUrl: 'https://images.unsplash.com/photo-1474979266404-7eaacbcd87c5?auto=format&fit=crop&w=800&q=80',
+        thumbnailUrl: 'https://images.unsplash.com/photo-1474979266404-7eaacbcd87c5?auto=format&fit=crop&w=200&q=70'
       }
     ],
     subtotal: 515,
