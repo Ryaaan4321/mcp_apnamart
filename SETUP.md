@@ -8,10 +8,10 @@ Complete instructions for connecting any AI client to the live Apna Mart MCP ser
 
 Anyone can connect directly to the deployed MCP server over SSE without cloning the repo or configuring a database or API key.
 
-- **Live MCP SSE Endpoint:** `https://mcp-apnamart.onrender.com/sse`
+- **Live MCP Streamable HTTP Endpoint:** `https://mcp-apnamart.onrender.com/mcp`
 - **Health Check:** `https://mcp-apnamart.onrender.com/health`
 
-### Option A: Cursor, Windsurf, Antigravity, Gemini CLI (Direct SSE)
+### Option A: Cursor, Windsurf, Antigravity, Gemini CLI (Streamable HTTP)
 
 Use this configuration:
 
@@ -19,7 +19,7 @@ Use this configuration:
 {
   "mcpServers": {
     "apna-mart": {
-      "url": "https://mcp-apnamart.onrender.com/sse"
+      "url": "https://mcp-apnamart.onrender.com/mcp"
     }
   }
 }
@@ -49,9 +49,7 @@ Use this configuration (requires Node.js installed on the client machine):
       "args": [
         "-y",
         "mcp-remote",
-        "https://mcp-apnamart.onrender.com/sse",
-        "--transport",
-        "sse-only"
+        "https://mcp-apnamart.onrender.com/mcp"
       ]
     }
   }
@@ -72,7 +70,7 @@ After saving, fully quit Claude Desktop (right-click the system tray icon -> **Q
 Run from any terminal with Node.js:
 
 ```bash
-npx @modelcontextprotocol/inspector https://mcp-apnamart.onrender.com/sse
+npx @modelcontextprotocol/inspector https://mcp-apnamart.onrender.com/mcp
 ```
 
 ---

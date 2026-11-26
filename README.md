@@ -143,7 +143,7 @@ npm start
 - REST Health Check: `http://localhost:4000/health`
 - Product Search API: `http://localhost:4000/api/v1/products/search?q=atta`
 - Store Serviceability API: `http://localhost:4000/api/v1/stores/serviceability/834001`
-- MCP SSE Endpoint: `http://localhost:4000/sse`
+- MCP Streamable HTTP Endpoint: `http://localhost:4000/mcp`
 
 ### 3. Run MCP in Stdio Mode (for AI Assistants & IDEs)
 ```bash
