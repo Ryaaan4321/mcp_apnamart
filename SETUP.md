@@ -49,7 +49,9 @@ Use this configuration (requires Node.js installed on the client machine):
       "args": [
         "-y",
         "mcp-remote",
-        "https://mcp-apnamart.onrender.com/sse"
+        "https://mcp-apnamart.onrender.com/sse",
+        "--transport",
+        "sse-only"
       ]
     }
   }
