@@ -2,6 +2,8 @@
 
 A cleanly architected Model Context Protocol (MCP) server and Express REST API for Apna Mart (https://apnamart.in/), the omnichannel retail grocery network powering everyday wholesale essentials across Tier-2 and Tier-3 cities in India.
 
+For step-by-step instructions on connecting Claude Desktop, Cursor, Antigravity, Gemini CLI, or running the full stack locally, see [SETUP.md](./SETUP.md).
+
 ---
 
 ## Architecture and Separation of Concerns
