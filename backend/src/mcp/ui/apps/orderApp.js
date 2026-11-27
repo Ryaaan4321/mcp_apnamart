@@ -67,7 +67,7 @@ function renderConfirmedMachine(order) {
             <hr class="ocm-divider" />
             <div id="ocm-sec-1" class="ocm-section">
               <div class="ocm-r-row"><span class="ocm-r-label">Order ID</span><span class="ocm-r-val" style="font-weight:700;">${esc(order.id)}</span></div>
-              <div class="ocm-r-row"><span class="ocm-r-label">Date</span><span class="ocm-r-val">${esc(formatDate(order.createdAt))}</span></div>
+              <div class="ocm-r-row"><span class="ocm-r-label">Date</span><span class="ocm-r-val">${esc(formatDate(order.placedAt || order.createdAt))}</span></div>
               <div class="ocm-r-row"><span class="ocm-r-label">Customer</span><span class="ocm-r-val">${esc(order.customerName || 'Customer')}</span></div>
               <div class="ocm-r-row"><span class="ocm-r-label">Deliver to</span><span class="ocm-r-val">${esc(fullAddress || '-')}</span></div>
               <div class="ocm-r-row"><span class="ocm-r-label">Expected</span><span class="ocm-r-val">${esc(expected)}</span></div>

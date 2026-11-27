@@ -5,7 +5,7 @@ export function registerOrderTools(server, orderService) {
   server.registerTool(
     'place_order',
     {
-      description: 'Review and place an Apna Mart quick delivery grocery order from items in the cart. Call first with confirmed=false to review items, totals, and store before placing the order with confirmed=true.',
+      description: 'Review and place an Apna Mart quick delivery grocery order from items in the cart. Call first with confirmed=false to review items, totals, and store before placing the order with confirmed=true. When confirmed=true, this tool renders an interactive Order Confirmation Receipt Machine UI slip.',
       inputSchema: {
         cartId: z.string().optional().default('default_user_cart').describe('Cart identifier containing items to order'),
         customerName: z.string().describe('Full name of the customer'),
@@ -109,6 +109,46 @@ export function registerOrderTools(server, orderService) {
         return {
           isError: true,
           content: [{ type: 'text', text: `Order tracking failed: ${err.message}` }]
+        };
+      }
+    }
+  );
+
+  server.registerTool(
+    'view_order_receipt',
+    {
+      description: 'Generate and display the interactive Order Confirmation Receipt / Slip UI for a placed Apna Mart order',
+      inputSchema: {
+        orderId: z.string().describe('The order ID (e.g. "ord_apm_1795800555480")'),
+        customerPhone: z.string().optional().describe('Customer phone number to verify order ownership')
+      },
+      _meta: {
+        ui: {
+          resourceUri: UI_RESOURCES.order.uri
+        }
+      }
+    },
+    async ({ orderId, customerPhone }) => {
+      try {
+        const order = await orderService.getOrderById(orderId, customerPhone);
+        const payload = {
+          status: 'CONFIRMED',
+          message: 'Order confirmation receipt slip rendered in the interactive UI.',
+          order
+        };
+        return {
+          content: [
+            {
+              type: 'text',
+              text: JSON.stringify(payload, null, 2)
+            }
+          ],
+          structuredContent: payload
+        };
+      } catch (err) {
+        return {
+          isError: true,
+          content: [{ type: 'text', text: `Failed to load order receipt: ${err.message}` }]
         };
       }
     }
