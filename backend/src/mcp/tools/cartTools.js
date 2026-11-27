@@ -5,12 +5,12 @@ export function registerCartTools(server, cartService) {
   server.registerTool(
     'manage_cart',
     {
-      description: 'Manage shopping cart on Apna Mart: view items, add items, remove items, or clear cart',
+      description: 'Manage shopping cart on Apna Mart: view items, add items, update item quantity, remove items, or clear cart',
       inputSchema: {
-        action: z.enum(['view', 'add', 'remove', 'clear']).describe('Action to perform on the cart'),
+        action: z.enum(['view', 'add', 'update', 'remove', 'clear']).describe('Action to perform on the cart'),
         cartId: z.string().optional().default('default_user_cart').describe('Unique cart identifier'),
-        productId: z.string().optional().describe('Product ID (required for "add" and "remove")'),
-        quantity: z.number().int().min(1).optional().default(1).describe('Quantity to add (for "add" action)')
+        productId: z.string().optional().describe('Product ID (required for "add", "update", and "remove")'),
+        quantity: z.number().int().min(0).optional().default(1).describe('Quantity for "add" or target quantity for "update" (0 removes item)')
       },
       _meta: {
         ui: {
@@ -28,6 +28,11 @@ export function registerCartTools(server, cartService) {
             return { isError: true, content: [{ type: 'text', text: 'Product ID is required to add an item.' }] };
           }
           result = await cartService.addItem(cartId, productId, quantity);
+        } else if (action === 'update') {
+          if (!productId) {
+            return { isError: true, content: [{ type: 'text', text: 'Product ID is required to update an item.' }] };
+          }
+          result = await cartService.updateItem(cartId, productId, quantity);
         } else if (action === 'remove') {
           if (!productId) {
             return { isError: true, content: [{ type: 'text', text: 'Product ID is required to remove an item.' }] };

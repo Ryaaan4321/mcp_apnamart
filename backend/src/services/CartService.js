@@ -77,6 +77,33 @@ export class CartService {
     return this.cartRepository.saveCart(cart);
   }
 
+  async updateItem(cartId = 'default_user_cart', productId, quantity) {
+    if (!productId) {
+      throw new BadRequestError('Product ID is required');
+    }
+    if (!Number.isInteger(quantity) || quantity < 0) {
+      throw new BadRequestError('Quantity must be a non-negative integer');
+    }
+    if (quantity === 0) {
+      return this.removeItem(cartId, productId);
+    }
+
+    const product = await this.productService.getProductById(productId);
+    if (!product.isAvailable || product.stock < quantity) {
+      throw new BadRequestError(`Only ${product.stock} items in stock for "${product.name}".`);
+    }
+
+    const cart = await this.cartRepository.getOrCreateCart(cartId);
+    const existingIndex = cart.items.findIndex(item => item.productId === productId);
+    if (existingIndex === -1) {
+      return this.addItem(cartId, productId, quantity);
+    }
+
+    cart.items[existingIndex].quantity = quantity;
+    cart.items[existingIndex].totalPrice = quantity * product.apnaMartPrice;
+    return this.cartRepository.saveCart(cart);
+  }
+
   async clearCart(cartId = 'default_user_cart') {
     this.logger.info(`Clearing cart ${cartId}`);
     return this.cartRepository.clearCart(cartId);
