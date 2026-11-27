@@ -39,7 +39,11 @@ export const UI_CSP_META = {
   ui: {
     prefersBorder: false,
     csp: {
-      resourceDomains: ['https://images.unsplash.com']
+      resourceDomains: [
+        'https://images.unsplash.com',
+        'https://fonts.googleapis.com',
+        'https://fonts.gstatic.com'
+      ]
     }
   }
 };
@@ -74,6 +78,9 @@ export function getUiHtml(key) {
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>${def.title}</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&display=swap" rel="stylesheet" />
 <style>${css}</style>
 </head>
 <body>

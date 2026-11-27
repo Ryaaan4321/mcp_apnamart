@@ -59,8 +59,8 @@ export function CartDrawer({
         paymentMethod
       });
       setPlacedOrder(res.data);
-      setStep('success');
-      onOrderSuccess();
+      setStep('cart');
+      onOrderSuccess(res.data);
     } catch (err) {
       setError(err.message);
     } finally {

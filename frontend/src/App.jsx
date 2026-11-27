@@ -8,6 +8,7 @@ import { BottomNav } from './components/BottomNav.jsx';
 import { LocationModal } from './components/LocationModal.jsx';
 import { CartDrawer } from './components/CartDrawer.jsx';
 import { TrackOrderModal } from './components/TrackOrderModal.jsx';
+import { OrderConfirmationMachine } from './components/OrderConfirmationMachine.jsx';
 
 export default function App() {
   const [products, setProducts] = useState([]);
@@ -30,6 +31,7 @@ export default function App() {
   const [locationModalOpen, setLocationModalOpen] = useState(false);
   const [cartDrawerOpen, setCartDrawerOpen] = useState(false);
   const [trackModalOpen, setTrackModalOpen] = useState(false);
+  const [confirmedOrder, setConfirmedOrder] = useState(null);
 
   const loadCart = useCallback(async () => {
     try {
@@ -349,15 +351,22 @@ export default function App() {
         onAdd={handleAddToCart}
         onDecrement={handleDecrementCart}
         onClearCart={handleClearCart}
-        onOrderSuccess={() => {
+        onOrderSuccess={(placedOrder) => {
           loadCart();
           loadProducts();
+          setCartDrawerOpen(false);
+          if (placedOrder) setConfirmedOrder(placedOrder);
         }}
       />
 
       <TrackOrderModal
         isOpen={trackModalOpen}
         onClose={() => setTrackModalOpen(false)}
+      />
+
+      <OrderConfirmationMachine
+        order={confirmedOrder}
+        onClose={() => setConfirmedOrder(null)}
       />
     </div>
   );
