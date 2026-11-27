@@ -1,6 +1,4 @@
-import { randomUUID } from 'node:crypto';
 import { StreamableHTTPServerTransport } from '@modelcontextprotocol/sdk/server/streamableHttp.js';
-import { isInitializeRequest } from '@modelcontextprotocol/sdk/types.js';
 import { createApp } from './app.js';
 import { config } from './config/env.js';
 import { defaultLogger } from './logger/Logger.js';
@@ -9,46 +7,21 @@ import { createMcpServer } from './mcp/index.js';
 const logger = defaultLogger.forContext('Server');
 const app = createApp();
 
-const mcpSessions = new Map();
-
+// Stateless Streamable HTTP transport so Render restarts/redeploys never invalidate active Claude sessions.
 app.post('/mcp', async (req, res) => {
+  const sessionServer = createMcpServer();
+  const transport = new StreamableHTTPServerTransport({
+    sessionIdGenerator: undefined
+  });
+
+  res.on('close', () => {
+    transport.close().catch(() => {});
+    sessionServer.close().catch(() => {});
+  });
+
   try {
-    const sessionId = req.headers['mcp-session-id'];
-
-    if (sessionId && mcpSessions.has(sessionId)) {
-      const { transport } = mcpSessions.get(sessionId);
-      await transport.handleRequest(req, res, req.body);
-      return;
-    }
-
-    if (!sessionId && isInitializeRequest(req.body)) {
-      const sessionServer = createMcpServer();
-      const transport = new StreamableHTTPServerTransport({
-        sessionIdGenerator: () => randomUUID(),
-        onsessioninitialized: (sid) => {
-          logger.info(`New MCP Streamable HTTP session initialized: ${sid}`);
-          mcpSessions.set(sid, { transport, server: sessionServer });
-        }
-      });
-
-      transport.onclose = () => {
-        const sid = transport.sessionId;
-        if (sid && mcpSessions.has(sid)) {
-          logger.info(`MCP session closed: ${sid}`);
-          mcpSessions.delete(sid);
-        }
-      };
-
-      await sessionServer.connect(transport);
-      await transport.handleRequest(req, res, req.body);
-      return;
-    }
-
-    res.status(400).json({
-      jsonrpc: '2.0',
-      error: { code: -32000, message: 'Bad Request: No valid MCP session ID provided' },
-      id: null
-    });
+    await sessionServer.connect(transport);
+    await transport.handleRequest(req, res, req.body);
   } catch (err) {
     logger.error('Error handling POST /mcp:', err);
     if (!res.headersSent) {
@@ -61,24 +34,20 @@ app.post('/mcp', async (req, res) => {
   }
 });
 
-app.get('/mcp', async (req, res) => {
-  const sessionId = req.headers['mcp-session-id'];
-  if (!sessionId || !mcpSessions.has(sessionId)) {
-    res.status(400).send('Invalid or missing mcp-session-id header');
-    return;
-  }
-  const { transport } = mcpSessions.get(sessionId);
-  await transport.handleRequest(req, res);
+app.get('/mcp', (req, res) => {
+  res.status(405).json({
+    jsonrpc: '2.0',
+    error: { code: -32000, message: 'Method not allowed.' },
+    id: null
+  });
 });
 
-app.delete('/mcp', async (req, res) => {
-  const sessionId = req.headers['mcp-session-id'];
-  if (!sessionId || !mcpSessions.has(sessionId)) {
-    res.status(400).send('Invalid or missing mcp-session-id header');
-    return;
-  }
-  const { transport } = mcpSessions.get(sessionId);
-  await transport.handleRequest(req, res);
+app.delete('/mcp', (req, res) => {
+  res.status(405).json({
+    jsonrpc: '2.0',
+    error: { code: -32000, message: 'Method not allowed.' },
+    id: null
+  });
 });
 
 const server = app.listen(config.port, () => {
