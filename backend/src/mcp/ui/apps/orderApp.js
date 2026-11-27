@@ -32,6 +32,27 @@ function formatDate(createdAt) {
   return parsed.toISOString().slice(0, 10);
 }
 
+function formatPayment(method) {
+  if (method === 'CASH_ON_DELIVERY') return 'Cash on Delivery';
+  if (method === 'ONLINE_UPI') return 'Online UPI';
+  return method || '-';
+}
+
+function renderBarcodeSvg(seedStr) {
+  const text = String(seedStr || 'APNAMART');
+  let x = 0;
+  const bars = [];
+  for (let i = 0; i < 36; i++) {
+    const code = text.charCodeAt(i % text.length);
+    const w = ((code + i) % 3) + 1;
+    if (i % 2 === 0) {
+      bars.push(`<rect x="${x}" y="0" width="${w}" height="24" fill="#171717" />`);
+    }
+    x += w + (((code >> 1) + i) % 2) + 1;
+  }
+  return `<svg width="${Math.min(x, 180)}" height="24" viewBox="0 0 ${x} 24" aria-hidden="true">${bars.join('')}</svg>`;
+}
+
 function renderConfirmedMachine(order) {
   const items = Array.isArray(order.items) ? order.items : [];
   const subtotal = order.subtotal ?? items.reduce(
@@ -46,23 +67,32 @@ function renderConfirmedMachine(order) {
   root.innerHTML = `
     <div class="ocm-wrap">
       <div class="ocm-machine">
-        <div id="ocm-screen" class="ocm-screen" role="status" aria-live="polite">
-          Please collect your order voucher
+        <div class="ocm-top-bar">
+          <div class="ocm-brand">
+            <span id="ocm-led" class="ocm-led"></span>
+            <span>Apna Mart POS</span>
+          </div>
+          <span id="ocm-status" class="ocm-status-chip" role="status" aria-live="polite">Voucher ready</span>
         </div>
-        <div class="ocm-slot-bar" aria-hidden="true"></div>
-        <div class="ocm-cash-outlet">
+
+        <div class="ocm-slot-housing">
+          <div class="ocm-slot-lip" aria-hidden="true"></div>
+        </div>
+
+        <div id="ocm-voucher-area" class="ocm-voucher-area">
           <div id="ocm-bill" class="ocm-bill">
-            <span class="ocm-bill-label">Voucher</span>
+            <span class="ocm-bill-label">Order Voucher</span>
             <span class="ocm-bill-amount">${esc(formatMoney(totalAmount))}</span>
           </div>
         </div>
-        <div class="ocm-slot-bar" aria-hidden="true"></div>
+
         <div class="ocm-receipt-tray">
           <article id="ocm-receipt" class="ocm-receipt" aria-label="Order confirmation receipt">
             <div class="ocm-watermark" aria-hidden="true">CONFIRMED</div>
             <header class="ocm-r-header">
-              <div class="ocm-r-store">${esc(order.storeName || 'Apna Mart')}</div>
-              <div class="ocm-r-sub">ORDER CONFIRMATION</div>
+              <div class="ocm-r-brand">APNA MART</div>
+              <div class="ocm-r-store">${esc(order.storeName || 'Apna Mart Supermart')}</div>
+              <div class="ocm-r-sub">ORDER CONFIRMATION SLIP</div>
             </header>
             <hr class="ocm-divider" />
             <div id="ocm-sec-1" class="ocm-section">
@@ -70,39 +100,46 @@ function renderConfirmedMachine(order) {
               <div class="ocm-r-row"><span class="ocm-r-label">Date</span><span class="ocm-r-val">${esc(formatDate(order.placedAt || order.createdAt))}</span></div>
               <div class="ocm-r-row"><span class="ocm-r-label">Customer</span><span class="ocm-r-val">${esc(order.customerName || 'Customer')}</span></div>
               <div class="ocm-r-row"><span class="ocm-r-label">Deliver to</span><span class="ocm-r-val">${esc(fullAddress || '-')}</span></div>
-              <div class="ocm-r-row"><span class="ocm-r-label">Expected</span><span class="ocm-r-val">${esc(expected)}</span></div>
+              <div class="ocm-r-row"><span class="ocm-r-label">ETA</span><span class="ocm-r-val">${esc(expected)}</span></div>
             </div>
             <hr class="ocm-divider" />
             <div id="ocm-sec-2" class="ocm-section">
+              <div class="ocm-items-head"><span>ITEM</span><span>AMOUNT</span></div>
               ${items.length === 0
                 ? `<div class="ocm-r-row"><span class="ocm-r-label">Order items</span><span class="ocm-r-val">${esc(formatMoney(subtotal))}</span></div>`
                 : items.map((item) => {
                     const qty = item.quantity ?? 1;
                     const lineTotal = item.totalPrice ?? (item.price || 0) * qty;
-                    return `<div class="ocm-r-row"><span class="ocm-r-label">${esc(qty + ' x ' + item.name)}</span><span class="ocm-r-val">${esc(formatMoney(lineTotal))}</span></div>`;
+                    return `<div class="ocm-r-row"><span class="ocm-r-label" style="color:#171717;">${esc(qty + ' x ' + item.name)}</span><span class="ocm-r-val">${esc(formatMoney(lineTotal))}</span></div>`;
                   }).join('')}
             </div>
             <hr class="ocm-divider" />
             <div id="ocm-sec-3" class="ocm-section">
               <div class="ocm-r-row"><span class="ocm-r-label">Subtotal</span><span class="ocm-r-val">${esc(formatMoney(subtotal))}</span></div>
               <div class="ocm-r-row"><span class="ocm-r-label">Delivery</span><span class="ocm-r-val">${deliveryFee === 0 ? 'FREE' : esc(formatMoney(deliveryFee))}</span></div>
+              <hr class="ocm-divider-solid" />
               <div class="ocm-r-row ocm-r-total"><span>TOTAL</span><span>${esc(formatMoney(totalAmount))}</span></div>
             </div>
             <hr class="ocm-divider" />
             <div id="ocm-sec-4" class="ocm-section">
-              <div class="ocm-r-row"><span class="ocm-r-label">Payment</span><span class="ocm-r-val">${esc(order.paymentMethod || '-')}</span></div>
+              <div class="ocm-r-row"><span class="ocm-r-label">Payment</span><span class="ocm-r-val">${esc(formatPayment(order.paymentMethod))}</span></div>
               <div class="ocm-r-row" style="align-items:center;"><span class="ocm-r-label">Status</span><span class="ocm-r-tag">CONFIRMED</span></div>
-              <hr class="ocm-divider" />
-              <div class="ocm-r-footer">Thank you for your order. Keep this for your records.</div>
+              <div class="ocm-barcode">
+                ${renderBarcodeSvg(order.id)}
+                <span class="ocm-barcode-id">${esc(order.id)}</span>
+              </div>
+              <div class="ocm-r-footer">Thank you for shopping with Apna Mart.</div>
             </div>
           </article>
         </div>
-        <button id="ocm-btn" class="btn-primary" style="margin-top:12px;">Take voucher</button>
+        <button id="ocm-btn" class="btn-primary" style="margin-top:12px;">Print receipt</button>
       </div>
     </div>
   `;
 
-  const screenEl = document.getElementById('ocm-screen');
+  const statusEl = document.getElementById('ocm-status');
+  const ledEl = document.getElementById('ocm-led');
+  const voucherArea = document.getElementById('ocm-voucher-area');
   const billEl = document.getElementById('ocm-bill');
   const receiptEl = document.getElementById('ocm-receipt');
   const btnEl = document.getElementById('ocm-btn');
@@ -123,26 +160,31 @@ function renderConfirmedMachine(order) {
     stage = 'printing';
     billEl?.classList.remove('out');
     billEl?.classList.add('taken');
+    setTimeout(() => {
+      voucherArea?.classList.add('collapsed');
+    }, 240);
     btnEl.disabled = true;
-    btnEl.textContent = 'Printing confirmation…';
-    if (screenEl) screenEl.textContent = 'Printing confirmation…';
+    btnEl.textContent = 'Printing receipt…';
+    if (statusEl) statusEl.textContent = 'Printing…';
+    ledEl?.classList.add('printing');
 
     setTimeout(() => {
       receiptEl?.classList.add('printed');
-    }, 400);
+    }, 360);
 
-    const startRevealAt = 2200;
+    const startRevealAt = 2000;
     sections.forEach((sec, idx) => {
       setTimeout(() => {
         sec?.classList.add('visible');
-      }, startRevealAt + idx * 150);
+      }, startRevealAt + idx * 140);
     });
 
     setTimeout(() => {
       stage = 'done';
-      if (screenEl) screenEl.textContent = 'Order confirmed. Please take your receipt.';
-      btnEl.textContent = 'Receipt printed';
-    }, startRevealAt + sections.length * 150 + 150);
+      ledEl?.classList.remove('printing');
+      if (statusEl) statusEl.textContent = 'Receipt printed';
+      btnEl.textContent = 'Done';
+    }, startRevealAt + sections.length * 140 + 150);
   });
 }
 
