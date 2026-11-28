@@ -748,10 +748,25 @@ body {
   flex-shrink: 0;
 }
 
+.ocm-r-item-name {
+  flex: 1;
+  min-width: 0;
+  color: #171717;
+  word-break: break-word;
+}
+
 .ocm-r-val {
+  min-width: 0;
   text-align: right;
   color: #171717;
   word-break: break-word;
+}
+
+.ocm-r-price {
+  flex-shrink: 0;
+  white-space: nowrap;
+  text-align: right;
+  color: #171717;
 }
 
 .ocm-items-head {

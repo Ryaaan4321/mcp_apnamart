@@ -140,19 +140,19 @@ function renderConfirmedMachine(order) {
             <div id="ocm-sec-2" class="ocm-section">
               <div class="ocm-items-head"><span>ITEM</span><span>AMOUNT</span></div>
               ${items.length === 0
-                ? `<div class="ocm-r-row"><span class="ocm-r-label">Order items</span><span class="ocm-r-val">${esc(formatMoney(subtotal))}</span></div>`
+                ? `<div class="ocm-r-row"><span class="ocm-r-item-name">Order items</span><span class="ocm-r-price">${esc(formatMoney(subtotal))}</span></div>`
                 : items.map((item) => {
                     const qty = item.quantity ?? 1;
                     const lineTotal = item.totalPrice ?? (item.price || 0) * qty;
-                    return `<div class="ocm-r-row"><span class="ocm-r-label" style="color:#171717;">${esc(qty + ' x ' + item.name)}</span><span class="ocm-r-val">${esc(formatMoney(lineTotal))}</span></div>`;
+                    return `<div class="ocm-r-row"><span class="ocm-r-item-name">${esc(qty + ' x ' + item.name)}</span><span class="ocm-r-price">${esc(formatMoney(lineTotal))}</span></div>`;
                   }).join('')}
             </div>
             <hr class="ocm-divider" />
             <div id="ocm-sec-3" class="ocm-section">
-              <div class="ocm-r-row"><span class="ocm-r-label">Subtotal</span><span class="ocm-r-val">${esc(formatMoney(subtotal))}</span></div>
-              <div class="ocm-r-row"><span class="ocm-r-label">Delivery</span><span class="ocm-r-val">${deliveryFee === 0 ? 'FREE' : esc(formatMoney(deliveryFee))}</span></div>
+              <div class="ocm-r-row"><span class="ocm-r-label">Subtotal</span><span class="ocm-r-price">${esc(formatMoney(subtotal))}</span></div>
+              <div class="ocm-r-row"><span class="ocm-r-label">Delivery</span><span class="ocm-r-price">${deliveryFee === 0 ? 'FREE' : esc(formatMoney(deliveryFee))}</span></div>
               <hr class="ocm-divider-solid" />
-              <div class="ocm-r-row ocm-r-total"><span>TOTAL</span><span>${esc(formatMoney(totalAmount))}</span></div>
+              <div class="ocm-r-row ocm-r-total"><span>TOTAL</span><span class="ocm-r-price">${esc(formatMoney(totalAmount))}</span></div>
             </div>
             <hr class="ocm-divider" />
             <div id="ocm-sec-4" class="ocm-section">

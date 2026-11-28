@@ -225,10 +225,12 @@ export function OrderConfirmationMachine({ order, onClose }) {
                     const lineTotal = item.totalPrice ?? (item.price || 0) * qty;
                     return (
                       <div key={item.productId || idx} className="flex justify-between gap-2.5 mb-1">
-                        <span className="text-neutral-900 break-words">
+                        <span className="flex-1 min-w-0 text-neutral-900 break-words">
                           {qty} x {item.name}
                         </span>
-                        <span className="text-right shrink-0 text-neutral-900">{formatMoney(lineTotal)}</span>
+                        <span className="text-right shrink-0 whitespace-nowrap text-neutral-900">
+                          {formatMoney(lineTotal)}
+                        </span>
                       </div>
                     );
                   })
@@ -240,18 +242,18 @@ export function OrderConfirmationMachine({ order, onClose }) {
               <div className={`ocm-section ${visibleSections >= 3 ? 'visible' : ''}`}>
                 <div className="flex justify-between gap-2.5 mb-1">
                   <span className="text-neutral-500">Subtotal</span>
-                  <span className="text-right text-neutral-900">{formatMoney(subtotal)}</span>
+                  <span className="text-right shrink-0 whitespace-nowrap text-neutral-900">{formatMoney(subtotal)}</span>
                 </div>
                 <div className="flex justify-between gap-2.5 mb-1">
                   <span className="text-neutral-500">Delivery</span>
-                  <span className="text-right text-neutral-900">
+                  <span className="text-right shrink-0 whitespace-nowrap text-neutral-900">
                     {deliveryFee === 0 ? 'FREE' : formatMoney(deliveryFee)}
                   </span>
                 </div>
                 <hr className="border-0 border-t border-neutral-800 my-1.5" />
                 <div className="flex justify-between gap-2.5 text-[13.5px] font-extrabold text-neutral-900 mt-1">
                   <span>TOTAL</span>
-                  <span>{formatMoney(totalAmount)}</span>
+                  <span className="shrink-0 whitespace-nowrap">{formatMoney(totalAmount)}</span>
                 </div>
               </div>
 
