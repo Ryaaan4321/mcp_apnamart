@@ -38,6 +38,40 @@ function formatPayment(method) {
   return method || '-';
 }
 
+function renderDemoQrSvg(upiUri) {
+  const size = 21;
+  const cell = 6;
+  const pad = 6;
+  const total = size * cell + pad * 2;
+  const text = String(upiUri || 'upi://pay?pa=apnamart@upi');
+  const isFinder = (r, c) =>
+    (r < 7 && c < 7) || (r < 7 && c >= size - 7) || (r >= size - 7 && c < 7);
+  const finderOn = (r, c) => {
+    const lr = r >= size - 7 ? r - (size - 7) : r;
+    const lc = c >= size - 7 ? c - (size - 7) : c;
+    return (
+      lr === 0 || lr === 6 || lc === 0 || lc === 6 ||
+      (lr >= 2 && lr <= 4 && lc >= 2 && lc <= 4)
+    );
+  };
+  const rects = [];
+  for (let r = 0; r < size; r++) {
+    for (let c = 0; c < size; c++) {
+      let dark = false;
+      if (isFinder(r, c)) {
+        dark = finderOn(r, c);
+      } else {
+        const idx = (r * size + c) % text.length;
+        dark = ((text.charCodeAt(idx) + r * 7 + c * 13) % 5) < 2;
+      }
+      if (dark) {
+        rects.push(`<rect x="${pad + c * cell}" y="${pad + r * cell}" width="${cell}" height="${cell}" fill="#171717" />`);
+      }
+    }
+  }
+  return `<svg width="144" height="144" viewBox="0 0 ${total} ${total}" aria-label="UPI QR Code">${rects.join('')}</svg>`;
+}
+
 function renderBarcodeSvg(seedStr) {
   const text = String(seedStr || 'APNAMART');
   let x = 0;
@@ -236,12 +270,11 @@ function renderOrder(data) {
         <div class="summary-total"><span>Total</span><span>&#8377;${esc(r.totalAmount)}</span></div>
       </div>
       <div style="margin-top:12px;">
-        <button id="confirm-order-btn" class="btn-primary">Place Order &middot; &#8377;${esc(r.totalAmount)}</button>
+        <button id="confirm-order-btn" class="btn-primary">${r.paymentMethod === 'ONLINE_UPI' ? `Proceed to Pay &middot; &#8377;${esc(r.totalAmount)}` : `Place Order &middot; &#8377;${esc(r.totalAmount)}`}</button>
       </div>
     `;
 
-    const btn = document.getElementById('confirm-order-btn');
-    btn?.addEventListener('click', async () => {
+    async function submitConfirmedOrder(btn, defaultLabel) {
       btn.disabled = true;
       btn.textContent = 'Placing Order...';
       try {
@@ -272,8 +305,65 @@ function renderOrder(data) {
           return;
         }
       } catch {
-        btn.textContent = `Place Order · ₹${r.totalAmount}`;
+        btn.textContent = defaultLabel;
         btn.disabled = false;
+      }
+    }
+
+    function renderUpiStep() {
+      const upiUri = `upi://pay?pa=apnamart@upi&pn=Apna%20Mart&am=${encodeURIComponent(r.totalAmount)}&cu=INR`;
+      root.innerHTML = `
+        <div class="header">
+          <div class="header-left">
+            ${ICON_BAG}
+            <div>
+              <div class="title">UPI Payment</div>
+              <div class="subtitle">${esc(r.store.name)}</div>
+            </div>
+          </div>
+          <span class="eta-pill">Scan &amp; Pay</span>
+        </div>
+        <div class="upi-card">
+          <div>
+            <div style="font-size:11px;color:#737373;">Payable Amount</div>
+            <div class="upi-amount">&#8377;${esc(r.totalAmount)}</div>
+          </div>
+          <div class="upi-qr-box">${renderDemoQrSvg(upiUri)}</div>
+          <div class="upi-id-pill"><span>UPI ID:</span><strong class="mono" style="color:#171717;">apnamart@upi</strong></div>
+          <div class="upi-apps">
+            <span class="upi-app-chip">GPay</span>
+            <span class="upi-app-chip">PhonePe</span>
+            <span class="upi-app-chip">Paytm</span>
+            <span class="upi-app-chip">BHIM</span>
+          </div>
+          <div class="upi-actions">
+            <button id="upi-back-btn" class="btn-secondary" type="button">Back</button>
+            <button id="upi-verify-btn" class="btn-primary" type="button" style="flex:1;">I've Paid &middot; Verify</button>
+          </div>
+        </div>
+      `;
+
+      document.getElementById('upi-back-btn')?.addEventListener('click', () => {
+        renderOrder(data);
+      });
+
+      const verifyBtn = document.getElementById('upi-verify-btn');
+      verifyBtn?.addEventListener('click', () => {
+        verifyBtn.disabled = true;
+        verifyBtn.textContent = 'Verifying UPI payment…';
+        setTimeout(() => {
+          verifyBtn.textContent = 'Payment Verified';
+          submitConfirmedOrder(verifyBtn, "I've Paid · Verify");
+        }, 1100);
+      });
+    }
+
+    const btn = document.getElementById('confirm-order-btn');
+    btn?.addEventListener('click', () => {
+      if (r.paymentMethod === 'ONLINE_UPI') {
+        renderUpiStep();
+      } else {
+        submitConfirmedOrder(btn, `Place Order · ₹${r.totalAmount}`);
       }
     });
     return;

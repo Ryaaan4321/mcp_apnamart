@@ -152,9 +152,32 @@ export class OrderService {
 
   async trackOrder(orderId, customerPhone = null) {
     const order = await this.getOrderById(orderId, customerPhone);
+    const stages = ['CONFIRMED', 'PACKING', 'OUT_FOR_DELIVERY', 'DELIVERED'];
+    const placedTime = new Date(order.placedAt || order.createdAt).getTime();
+    let computedStatus = order.status || 'CONFIRMED';
+
+    if (Number.isFinite(placedTime)) {
+      const elapsedSec = Math.max(0, (Date.now() - placedTime) / 1000);
+      let timeIdx = 0;
+      if (elapsedSec >= 75) timeIdx = 3;
+      else if (elapsedSec >= 45) timeIdx = 2;
+      else if (elapsedSec >= 20) timeIdx = 1;
+
+      const currentIdx = stages.indexOf(order.status);
+      computedStatus = stages[Math.max(currentIdx, timeIdx)];
+    }
+
+    const baseEta = Number(order.estimatedDeliveryMinutes || 15);
+    const etaByStage = {
+      CONFIRMED: baseEta,
+      PACKING: Math.max(2, Math.round(baseEta * 0.7)),
+      OUT_FOR_DELIVERY: Math.max(1, Math.round(baseEta * 0.35)),
+      DELIVERED: 0
+    };
+
     return {
       orderId: order.id,
-      status: order.status,
+      status: computedStatus,
       customerName: order.customerName,
       storeName: order.storeName,
       deliveryAddress: order.deliveryAddress,
@@ -163,7 +186,7 @@ export class OrderService {
       items: order.items,
       itemsCount: order.items.length,
       totalAmount: order.totalAmount,
-      estimatedDeliveryMinutes: order.estimatedDeliveryMinutes,
+      estimatedDeliveryMinutes: etaByStage[computedStatus] ?? baseEta,
       placedAt: order.placedAt || order.createdAt
     };
   }
